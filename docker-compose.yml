@@ -9,23 +9,4 @@ services:
       - PORT=4000
     volumes:
       - ./data:/app/data
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=${TRAEFIK_NETWORK:-dokploy-network}
-      - traefik.http.routers.mbomsign.rule=Host(`mbomsign.com`) || Host(`www.mbomsign.com`)
-      - traefik.http.routers.mbomsign.entrypoints=websecure
-      - traefik.http.routers.mbomsign.tls=true
-      - traefik.http.services.mbomsign.loadbalancer.server.port=4000
-      - traefik.http.routers.mbomsign-http.rule=Host(`mbomsign.com`) || Host(`www.mbomsign.com`)
-      - traefik.http.routers.mbomsign-http.entrypoints=web
-      - traefik.http.routers.mbomsign-http.middlewares=mbomsign-https-redirect
-      - traefik.http.middlewares.mbomsign-https-redirect.redirectscheme.scheme=https
-    networks:
-      - default
-      - proxy
     restart: unless-stopped
-
-networks:
-  proxy:
-    name: ${TRAEFIK_NETWORK:-dokploy-network}
-    external: true

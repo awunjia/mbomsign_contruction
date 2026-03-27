@@ -94,10 +94,6 @@ If SMTP is not configured, subscriptions are still saved but email sending is sk
 
 ### Traefik notes
 
-- This project now includes Traefik labels in `docker-compose.yml`.
-- The app is exposed through Traefik on internal container port `4000`.
-- If your Dokploy Traefik network has a different name, set:
-
-```bash
-TRAEFIK_NETWORK=your-traefik-network-name
-```
+- In Dokploy, prefer the Domain UI for routing (Host + Path + Container Port).
+- Do not duplicate custom Traefik router labels in `docker-compose.yml` when Domain UI is enabled.
+- Container port for this app is `4000`.
