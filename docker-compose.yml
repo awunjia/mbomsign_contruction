@@ -1,0 +1,14 @@
+services:
+  mbomsign-coming-soon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mbomsign-coming-soon
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
