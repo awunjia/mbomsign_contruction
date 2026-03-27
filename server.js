@@ -17,7 +17,9 @@ const DATA_DIR = path.join(__dirname, "data");
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, "subscribers.json");
 const isProduction = process.env.NODE_ENV === "production";
 const APP_URL = process.env.APP_URL || "https://mbomsign.com";
-const MAIL_FROM = process.env.MAIL_FROM || "MbomSign <noreply@mbomsign.com>";
+const MAIL_FROM = String(
+  process.env.MAIL_FROM || "MbomSign <noreply@mbomsign.com>",
+).trim();
 const SMTP_HOST = String(process.env.SMTP_HOST || "").trim();
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = String(process.env.SMTP_USER || "").trim();
@@ -29,10 +31,11 @@ app.use(express.json());
 
 function smtpTransportOptions() {
   const port = SMTP_PORT;
-  const implicitTls = port === 465;
+  const startTlsPorts = new Set([25, 80, 587, 2525, 8025]);
+  const implicitTls = port === 465 || port === 8465;
   const secure =
     implicitTls ||
-    (process.env.SMTP_SECURE === "true" && port !== 587 && port !== 2525);
+    (process.env.SMTP_SECURE === "true" && !startTlsPorts.has(port));
   return {
     host: SMTP_HOST,
     port,
@@ -41,8 +44,14 @@ function smtpTransportOptions() {
       user: SMTP_USER,
       pass: SMTP_PASS,
     },
-    requireTLS: !secure && port !== 25,
+    connectionTimeout: 20_000,
+    greetingTimeout: 20_000,
+    socketTimeout: 45_000,
+    // SMTP2GO’s sample uses only host/port/auth; forcing requireTLS on 2525/587
+    // can break handshakes in some environments.
+    requireTLS: process.env.SMTP_REQUIRE_TLS === "true",
     tls: { minVersion: "TLSv1.2" },
+    debug: process.env.SMTP_DEBUG === "true",
   };
 }
 
@@ -182,6 +191,16 @@ async function sendWelcomeEmail(recipientEmail) {
       : [],
   });
 
+  const accepted = Array.isArray(info.accepted) ? info.accepted : [];
+  if (accepted.length === 0) {
+    console.error("SMTP accepted no recipients:", {
+      to: recipientEmail,
+      rejected: info.rejected,
+      response: info.response,
+    });
+    return { sent: false, reason: "smtp_rejected" };
+  }
+
   console.log("Welcome email delivered to SMTP provider:", {
     to: recipientEmail,
     messageId: info.messageId,
@@ -260,7 +279,14 @@ app.post("/api/subscribe", async (req, res) => {
       mailWasSent = mailResult.sent;
       mailFailureReason = mailResult.reason || "";
     } catch (error) {
-      console.error("Welcome email send failed:", error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      console.error("Welcome email send failed:", {
+        message: err.message,
+        code: err.code,
+        command: err.command,
+        response: err.response,
+        responseCode: err.responseCode,
+      });
       mailFailureReason = "send_failed";
     }
 
