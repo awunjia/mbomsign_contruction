@@ -169,15 +169,33 @@ function App() {
     setStatus("loading");
     setMessage("");
 
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || "").replace(
+      /\/$/,
+      "",
+    );
+    const subscribeUrl = apiBase
+      ? `${apiBase}/api/subscribe`
+      : `${window.location.origin}/api/subscribe`;
+
     try {
-      const response = await fetch("/api/subscribe", {
+      const response = await fetch(subscribeUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
-      const data = await response.json();
+      const raw = await response.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        setStatus("error");
+        setMessage(
+          `Something went wrong (HTTP ${response.status}). The site may be updating — please try again in a moment.`,
+        );
+        return;
+      }
 
       if (!response.ok || !data.success) {
         setStatus("error");
@@ -190,7 +208,9 @@ function App() {
       setEmail("");
     } catch {
       setStatus("error");
-      setMessage("Network error. Please try again.");
+      setMessage(
+        "Network error. Check your connection, or try again if the page was opened from a cached copy.",
+      );
     }
   }
 

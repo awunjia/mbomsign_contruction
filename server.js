@@ -20,12 +20,31 @@ const APP_URL = process.env.APP_URL || "https://mbomsign.com";
 const MAIL_FROM = process.env.MAIL_FROM || "MbomSign <noreply@mbomsign.com>";
 const SMTP_HOST = process.env.SMTP_HOST || "";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
-const SMTP_SECURE = process.env.SMTP_SECURE === "true";
 const SMTP_USER = process.env.SMTP_USER || "";
 const SMTP_PASS = process.env.SMTP_PASS || "";
 
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json());
+
+function smtpTransportOptions() {
+  const port = SMTP_PORT;
+  const implicitTls = port === 465;
+  const secure =
+    implicitTls ||
+    (process.env.SMTP_SECURE === "true" && port !== 587 && port !== 2525);
+  return {
+    host: SMTP_HOST,
+    port,
+    secure,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+    requireTLS: !secure && port !== 25,
+    tls: { minVersion: "TLSv1.2" },
+  };
+}
 
 function hasSmtpConfig() {
   return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
@@ -133,15 +152,7 @@ async function sendWelcomeEmail(recipientEmail) {
     return { sent: false, reason: "smtp_not_configured" };
   }
 
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_SECURE,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
+  const transporter = nodemailer.createTransport(smtpTransportOptions());
 
   const info = await transporter.sendMail({
     from: MAIL_FROM,
@@ -201,59 +212,67 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.post("/api/subscribe", async (req, res) => {
-  const email = String(req.body?.email || "")
-    .trim()
-    .toLowerCase();
-
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!isValidEmail) {
-    return res.status(400).json({ success: false, message: "Invalid email." });
-  }
-
-  const subscribers = await readSubscribers();
-  const exists = subscribers.some((entry) => entry.email === email);
-
-  if (exists) {
-    return res.status(409).json({
-      success: false,
-      message: "This email is already subscribed.",
-    });
-  }
-
-  subscribers.push({
-    email,
-    createdAt: new Date().toISOString(),
-    source: "coming-soon-page",
-  });
-  await writeSubscribers(subscribers);
-
-  let mailWasSent = false;
-  let mailFailureReason = "";
   try {
-    const mailResult = await sendWelcomeEmail(email);
-    mailWasSent = mailResult.sent;
-    mailFailureReason = mailResult.reason || "";
-  } catch (error) {
-    console.error("Welcome email send failed:", error);
-    mailFailureReason = "send_failed";
-  }
+    const email = String(req.body?.email || "")
+      .trim()
+      .toLowerCase();
 
-  if (!mailWasSent) {
-    return res.status(202).json({
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isValidEmail) {
+      return res.status(400).json({ success: false, message: "Invalid email." });
+    }
+
+    const subscribers = await readSubscribers();
+    const exists = subscribers.some((entry) => entry.email === email);
+
+    if (exists) {
+      return res.status(409).json({
+        success: false,
+        message: "This email is already subscribed.",
+      });
+    }
+
+    subscribers.push({
+      email,
+      createdAt: new Date().toISOString(),
+      source: "coming-soon-page",
+    });
+    await writeSubscribers(subscribers);
+
+    let mailWasSent = false;
+    let mailFailureReason = "";
+    try {
+      const mailResult = await sendWelcomeEmail(email);
+      mailWasSent = mailResult.sent;
+      mailFailureReason = mailResult.reason || "";
+    } catch (error) {
+      console.error("Welcome email send failed:", error);
+      mailFailureReason = "send_failed";
+    }
+
+    if (!mailWasSent) {
+      return res.status(202).json({
+        success: true,
+        message:
+          "Thanks. You are on the waiting list, but the welcome email was not sent. Please check SMTP settings.",
+        mailSent: false,
+        reason: mailFailureReason,
+      });
+    }
+
+    return res.status(201).json({
       success: true,
       message:
-        "Thanks. You are on the waiting list, but the welcome email was not sent. Please check SMTP settings.",
-      mailSent: false,
-      reason: mailFailureReason,
+        "Thanks. You are on the MbomSign waiting list. A welcome email has been sent.",
+      mailSent: true,
+    });
+  } catch (error) {
+    console.error("/api/subscribe error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not save your email. Please try again.",
     });
   }
-
-  return res.status(201).json({
-    success: true,
-    message:
-      "Thanks. You are on the MbomSign waiting list. A welcome email has been sent.",
-    mailSent: true,
-  });
 });
 
 if (isProduction) {
@@ -266,15 +285,7 @@ if (isProduction) {
 
 ensureSubscribersFile().then(() => {
   if (hasSmtpConfig()) {
-    const verifier = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_SECURE,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    });
+    const verifier = nodemailer.createTransport(smtpTransportOptions());
 
     verifier.verify().then(
       () =>
