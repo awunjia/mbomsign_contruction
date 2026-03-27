@@ -87,6 +87,17 @@ If SMTP is not configured, subscriptions are still saved but email sending is sk
 
 1. Create app in Dokploy from this repo/folder.
 2. Use `docker-compose.yml` as deployment source.
-3. Map custom domain `mbomsign.com` in Dokploy.
-4. In Cloudflare, point DNS (A/AAAA/CNAME depending on your server) to Dokploy host.
-5. Enable SSL in Cloudflare and ensure Dokploy has HTTPS enabled.
+3. Ensure Traefik external network exists in Dokploy (default expected: `dokploy-network`).
+4. Map custom domain `mbomsign.com` in Dokploy.
+5. In Cloudflare, point DNS (A/AAAA/CNAME depending on your server) to Dokploy host.
+6. Enable SSL in Cloudflare and ensure Dokploy has HTTPS enabled.
+
+### Traefik notes
+
+- This project now includes Traefik labels in `docker-compose.yml`.
+- The app is exposed through Traefik on internal container port `4000`.
+- If your Dokploy Traefik network has a different name, set:
+
+```bash
+TRAEFIK_NETWORK=your-traefik-network-name
+```
