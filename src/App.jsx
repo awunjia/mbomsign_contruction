@@ -128,7 +128,10 @@ function App() {
     seconds: "00",
   });
 
-  const launchDate = useMemo(() => new Date("2026-05-31T23:59:59"), []);
+  const launchDate = useMemo(
+    () => new Date(2026, 3, 30, 23, 59, 59),
+    [],
+  );
   const t = COPY[language];
 
   useEffect(() => {

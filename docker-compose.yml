@@ -4,9 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: mbomsign-coming-soon
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
-      - PORT=4000
+      NODE_ENV: production
+      PORT: 4000
     volumes:
       - ./data:/app/data
     restart: unless-stopped

@@ -2,11 +2,17 @@ import express from "express";
 import cors from "cors";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import dns from "node:dns";
+import crypto from "node:crypto";
 import { promises as fs } from "node:fs";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+if (process.env.SMTP_IPV4_FIRST !== "false") {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,8 +23,8 @@ const DATA_DIR = path.join(__dirname, "data");
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, "subscribers.json");
 const isProduction = process.env.NODE_ENV === "production";
 const APP_URL = process.env.APP_URL || "https://mbomsign.com";
-const MAIL_FROM = String(
-  process.env.MAIL_FROM || "MbomSign <noreply@mbomsign.com>",
+const SMTP_FROM = String(
+  process.env.SMTP_FROM || "MbomSign <noreply@mbomsign.com>",
 ).trim();
 const SMTP_HOST = String(process.env.SMTP_HOST || "").trim();
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
@@ -33,9 +39,13 @@ function smtpTransportOptions() {
   const port = SMTP_PORT;
   const startTlsPorts = new Set([25, 80, 587, 2525, 8025]);
   const implicitTls = port === 465 || port === 8465;
+  const encryption = String(process.env.SMTP_ENCRYPTION || "").toLowerCase();
+  const wantSsl =
+    encryption === "ssl" ||
+    encryption === "smtps" ||
+    process.env.SMTP_SECURE === "true";
   const secure =
-    implicitTls ||
-    (process.env.SMTP_SECURE === "true" && !startTlsPorts.has(port));
+    implicitTls || (wantSsl && !startTlsPorts.has(port));
   return {
     host: SMTP_HOST,
     port,
@@ -58,6 +68,170 @@ function smtpTransportOptions() {
 function hasSmtpConfig() {
   return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
 }
+
+function classifySmtpSendError(error) {
+  const err = error instanceof Error ? error : new Error(String(error));
+  const blob = `${err.message || ""} ${err.response || ""}`.toLowerCase();
+  if (/not verified|verify the sender|sender domain|from header sender/.test(blob)) {
+    return "sender_not_verified";
+  }
+  if (err.code === "EAUTH") {
+    return "smtp_auth_failed";
+  }
+  return "send_failed";
+}
+
+const SUBSCRIBERS_ADMIN_SECRET = String(
+  process.env.SUBSCRIBERS_ADMIN_SECRET || "",
+).trim();
+const WAITLIST_ADMIN_USER = String(
+  process.env.WAITLIST_ADMIN_USER || "admin",
+).trim();
+
+function timingSafeUtf8Equal(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") {
+    return false;
+  }
+  try {
+    const ba = Buffer.from(a, "utf8");
+    const bb = Buffer.from(b, "utf8");
+    if (ba.length !== bb.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(ba, bb);
+  } catch {
+    return false;
+  }
+}
+
+function waitlistAdminConfigured() {
+  return Boolean(SUBSCRIBERS_ADMIN_SECRET);
+}
+
+function waitlistAdminBasicAuth(req, res, next) {
+  if (!waitlistAdminConfigured()) {
+    return res
+      .status(503)
+      .type("text/plain")
+      .send("Waitlist admin is not configured (set SUBSCRIBERS_ADMIN_SECRET).");
+  }
+
+  const hdr = req.headers.authorization || "";
+  if (!hdr.startsWith("Basic ")) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="MbomSign waitlist"');
+    return res.status(401).type("text/plain").send("Authentication required.");
+  }
+
+  let decoded = "";
+  try {
+    decoded = Buffer.from(hdr.slice(6).trim(), "base64").toString("utf8");
+  } catch {
+    res.setHeader("WWW-Authenticate", 'Basic realm="MbomSign waitlist"');
+    return res.status(401).type("text/plain").send("Invalid credentials.");
+  }
+
+  const sep = decoded.indexOf(":");
+  const givenUser = sep >= 0 ? decoded.slice(0, sep) : decoded;
+  const givenPass = sep >= 0 ? decoded.slice(sep + 1) : "";
+
+  const userOk = timingSafeUtf8Equal(givenUser, WAITLIST_ADMIN_USER);
+  const passOk = timingSafeUtf8Equal(givenPass, SUBSCRIBERS_ADMIN_SECRET);
+  if (!userOk || !passOk) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="MbomSign waitlist"');
+    return res.status(401).type("text/plain").send("Invalid credentials.");
+  }
+
+  next();
+}
+
+const WAITLIST_ADMIN_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MbomSign — Waitlist</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; color: #0f172a; }
+    body { margin: 0; padding: 24px; background: #f1f5f9; }
+    main { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 12px;
+      padding: 24px; box-shadow: 0 4px 24px rgba(15,23,42,0.08); }
+    h1 { margin: 0 0 8px; font-size: 1.25rem; }
+    p.meta { margin: 0 0 20px; color: #64748b; font-size: 0.875rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; }
+    th { color: #475569; font-weight: 600; }
+    .actions { margin-top: 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    button { padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+    .danger { background: #b91c1c; color: #fff; }
+    .secondary { background: #e2e8f0; color: #0f172a; }
+    .err { color: #b91c1c; margin-top: 12px; font-size: 0.875rem; }
+    .ok { color: #15803d; margin-top: 12px; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Waitlist subscribers</h1>
+    <p class="meta">Signed in with HTTP Basic Auth. Close the tab or clear site data to sign out.</p>
+    <div id="status"></div>
+    <table>
+      <thead><tr><th>Email</th><th>Since</th><th>Source</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="actions">
+      <button type="button" class="secondary" id="reload">Refresh</button>
+      <button type="button" class="danger" id="reset">Reset list (delete all)</button>
+    </div>
+  </main>
+  <script>
+    const rows = document.getElementById("rows");
+    const status = document.getElementById("status");
+
+    async function load() {
+      status.textContent = "";
+      rows.innerHTML = "";
+      const r = await fetch("/api/waitlist-admin/subscribers", {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      if (!r.ok) {
+        status.textContent = "Could not load list (" + r.status + ").";
+        status.className = "err";
+        return;
+      }
+      const data = await r.json();
+      status.className = "ok";
+      status.textContent = data.count + " subscriber(s).";
+      for (const s of data.subscribers || []) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + (s.email || "") + "</td><td>" + (s.createdAt || "") + "</td><td>" + (s.source || "") + "</td>";
+        rows.appendChild(tr);
+      }
+    }
+
+    document.getElementById("reload").onclick = load;
+
+    document.getElementById("reset").onclick = async () => {
+      if (!confirm("Delete every subscriber? This cannot be undone.")) return;
+      status.textContent = "";
+      const r = await fetch("/api/waitlist-admin/reset", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      if (!r.ok) {
+        status.textContent = "Reset failed (" + r.status + ").";
+        status.className = "err";
+        return;
+      }
+      status.className = "ok";
+      status.textContent = "List cleared.";
+      await load();
+    };
+
+    load();
+  </script>
+</body>
+</html>`;
 
 function buildWelcomeEmailHtml(recipientEmail, includeLogoCid) {
   const currentYear = new Date().getFullYear();
@@ -164,52 +338,73 @@ async function sendWelcomeEmail(recipientEmail) {
     return { sent: false, reason: "smtp_not_configured" };
   }
 
-  const transporter = nodemailer.createTransport(smtpTransportOptions());
-
-  const logoPath = path.join(__dirname, "public", "mbomsign-logo.png");
-  let hasLogoFile = false;
   try {
-    await fs.access(logoPath);
-    hasLogoFile = true;
-  } catch {
-    hasLogoFile = false;
-  }
+    const transporter = nodemailer.createTransport(smtpTransportOptions());
 
-  const info = await transporter.sendMail({
-    from: MAIL_FROM,
-    to: recipientEmail,
-    subject: "Welcome to MbomSign - You are on the list",
-    html: buildWelcomeEmailHtml(recipientEmail, hasLogoFile),
-    attachments: hasLogoFile
-      ? [
-          {
-            filename: "mbomsign-logo.png",
-            path: logoPath,
-            cid: "mbomsignlogo",
-          },
-        ]
-      : [],
-  });
+    const logoPath = path.join(__dirname, "public", "mbomsign-logo.png");
+    let hasLogoFile = false;
+    try {
+      await fs.access(logoPath);
+      hasLogoFile = true;
+    } catch {
+      hasLogoFile = false;
+    }
 
-  const accepted = Array.isArray(info.accepted) ? info.accepted : [];
-  if (accepted.length === 0) {
-    console.error("SMTP accepted no recipients:", {
+    const info = await transporter.sendMail({
+      from: SMTP_FROM,
       to: recipientEmail,
+      subject: "Welcome to MbomSign - You are on the list",
+      html: buildWelcomeEmailHtml(recipientEmail, hasLogoFile),
+      attachments: hasLogoFile
+        ? [
+            {
+              filename: "mbomsign-logo.png",
+              path: logoPath,
+              cid: "mbomsignlogo",
+            },
+          ]
+        : [],
+    });
+
+    const accepted = Array.isArray(info.accepted) ? info.accepted : [];
+    const rejected = Array.isArray(info.rejected) ? info.rejected : [];
+    const responseLine = String(info.response || "").trim();
+    const responseOk = /^2/.test(responseLine);
+    const sendOk =
+      rejected.length === 0 && (accepted.length > 0 || responseOk);
+    if (!sendOk) {
+      console.error("SMTP did not accept message:", {
+        to: recipientEmail,
+        accepted,
+        rejected,
+        response: info.response,
+      });
+      return { sent: false, reason: "smtp_rejected" };
+    }
+
+    console.log("Welcome email delivered to SMTP provider:", {
+      to: recipientEmail,
+      messageId: info.messageId,
+      accepted: info.accepted,
       rejected: info.rejected,
       response: info.response,
     });
-    return { sent: false, reason: "smtp_rejected" };
+
+    return { sent: true };
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error("Welcome email send failed:", {
+      message: err.message,
+      code: err.code,
+      command: err.command,
+      response: err.response,
+      responseCode: err.responseCode,
+    });
+    return {
+      sent: false,
+      reason: classifySmtpSendError(err),
+    };
   }
-
-  console.log("Welcome email delivered to SMTP provider:", {
-    to: recipientEmail,
-    messageId: info.messageId,
-    accepted: info.accepted,
-    rejected: info.rejected,
-    response: info.response,
-  });
-
-  return { sent: true };
 }
 
 async function ensureSubscribersFile() {
@@ -241,7 +436,39 @@ async function writeSubscribers(subscribers) {
 }
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "mbomsign-coming-soon-api" });
+  res.json({
+    ok: true,
+    service: "mbomsign-coming-soon-api",
+    smtpConfigured: hasSmtpConfig(),
+  });
+});
+
+app.get("/waitlist-admin", waitlistAdminBasicAuth, (_req, res) => {
+  res.type("html").send(WAITLIST_ADMIN_HTML);
+});
+
+app.get("/api/waitlist-admin/subscribers", waitlistAdminBasicAuth, async (_req, res) => {
+  try {
+    const subscribers = await readSubscribers();
+    res.json({
+      ok: true,
+      count: subscribers.length,
+      subscribers,
+    });
+  } catch (error) {
+    console.error("waitlist list error:", error);
+    res.status(500).json({ ok: false, message: "Could not read subscribers." });
+  }
+});
+
+app.post("/api/waitlist-admin/reset", waitlistAdminBasicAuth, async (_req, res) => {
+  try {
+    await writeSubscribers([]);
+    res.json({ ok: true, message: "Subscribers list cleared." });
+  } catch (error) {
+    console.error("waitlist reset error:", error);
+    res.status(500).json({ ok: false, message: "Could not reset subscribers." });
+  }
 });
 
 app.post("/api/subscribe", async (req, res) => {
@@ -272,29 +499,23 @@ app.post("/api/subscribe", async (req, res) => {
     });
     await writeSubscribers(subscribers);
 
-    let mailWasSent = false;
-    let mailFailureReason = "";
-    try {
-      const mailResult = await sendWelcomeEmail(email);
-      mailWasSent = mailResult.sent;
-      mailFailureReason = mailResult.reason || "";
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      console.error("Welcome email send failed:", {
-        message: err.message,
-        code: err.code,
-        command: err.command,
-        response: err.response,
-        responseCode: err.responseCode,
-      });
-      mailFailureReason = "send_failed";
-    }
+    const mailResult = await sendWelcomeEmail(email);
+    const mailWasSent = mailResult.sent;
+    const mailFailureReason = mailResult.reason || "";
 
     if (!mailWasSent) {
+      let mailMessage =
+        "Thanks. You are on the waiting list, but the welcome email was not sent. Please check SMTP settings.";
+      if (mailFailureReason === "sender_not_verified") {
+        mailMessage =
+          "Thanks. You are on the waiting list. The welcome email was not sent: your mail provider rejected the From address. In SMTP2GO (and similar), add or verify the domain or sender under Verified Senders, or set SMTP_FROM to an allowed address.";
+      } else if (mailFailureReason === "smtp_auth_failed") {
+        mailMessage =
+          "Thanks. You are on the waiting list. The welcome email was not sent: SMTP login failed. Check SMTP_USER and SMTP_PASS.";
+      }
       return res.status(202).json({
         success: true,
-        message:
-          "Thanks. You are on the waiting list, but the welcome email was not sent. Please check SMTP settings.",
+        message: mailMessage,
         mailSent: false,
         reason: mailFailureReason,
       });
@@ -315,11 +536,36 @@ app.post("/api/subscribe", async (req, res) => {
   }
 });
 
+const SPA_NOT_FOUND_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Page not found — MbomSign</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; background: #f1f5f9; color: #0f172a; }
+    main { text-align: center; padding: 24px; }
+    a { color: #1d4ed8; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>404</h1>
+    <p>This page does not exist.</p>
+    <p><a href="/">Back to MbomSign</a></p>
+  </main>
+</body>
+</html>`;
+
 if (isProduction) {
   const distPath = path.join(__dirname, "dist");
   app.use(express.static(distPath));
-  app.get(/.*/, (_req, res) => {
+  app.get("/", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
+  });
+  app.get(/.*/, (_req, res) => {
+    res.status(404).type("html").send(SPA_NOT_FOUND_HTML);
   });
 }
 
@@ -334,7 +580,13 @@ ensureSubscribersFile().then(() => {
           port: SMTP_PORT,
           userHint: SMTP_USER ? `${SMTP_USER.slice(0, 4)}...` : "none",
         }),
-      (error) => console.error("SMTP verification failed:", error.message),
+      (error) =>
+        console.error("SMTP verification failed:", {
+          message: error.message,
+          code: error.code,
+          command: error.command,
+          response: error.response,
+        }),
     );
   }
 
