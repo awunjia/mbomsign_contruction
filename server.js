@@ -18,10 +18,10 @@ const SUBSCRIBERS_FILE = path.join(DATA_DIR, "subscribers.json");
 const isProduction = process.env.NODE_ENV === "production";
 const APP_URL = process.env.APP_URL || "https://mbomsign.com";
 const MAIL_FROM = process.env.MAIL_FROM || "MbomSign <noreply@mbomsign.com>";
-const SMTP_HOST = process.env.SMTP_HOST || "";
+const SMTP_HOST = String(process.env.SMTP_HOST || "").trim();
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
-const SMTP_USER = process.env.SMTP_USER || "";
-const SMTP_PASS = process.env.SMTP_PASS || "";
+const SMTP_USER = String(process.env.SMTP_USER || "").trim();
+const SMTP_PASS = String(process.env.SMTP_PASS || "").trim();
 
 app.set("trust proxy", 1);
 app.use(cors());
@@ -50,8 +50,11 @@ function hasSmtpConfig() {
   return Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
 }
 
-function buildWelcomeEmailHtml(recipientEmail) {
+function buildWelcomeEmailHtml(recipientEmail, includeLogoCid) {
   const currentYear = new Date().getFullYear();
+  const headerBrand = includeLogoCid
+    ? `<img src="cid:mbomsignlogo" alt="MbomSign" style="display:block;width:168px;max-width:100%;border-radius:10px;background:#ffffff;padding:6px;" />`
+    : `<span style="display:block;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.03em;">MbomSign</span>`;
   return `
   <div style="margin:0;padding:0;background:#f3f6fc;font-family:'Plus Jakarta Sans',Inter,'Segoe UI',Arial,sans-serif;color:#334155;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 12px;background:#f3f6fc;">
@@ -60,7 +63,7 @@ function buildWelcomeEmailHtml(recipientEmail) {
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:660px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #dbe4f3;box-shadow:0 14px 35px rgba(15,23,42,0.08);">
             <tr>
               <td style="padding:22px 24px;background:linear-gradient(120deg,#0f235c,#162e78);">
-                <img src="cid:mbomsignlogo" alt="MbomSign" style="display:block;width:168px;max-width:100%;border-radius:10px;background:#ffffff;padding:6px;" />
+                ${headerBrand}
               </td>
             </tr>
             <tr>
@@ -154,18 +157,29 @@ async function sendWelcomeEmail(recipientEmail) {
 
   const transporter = nodemailer.createTransport(smtpTransportOptions());
 
+  const logoPath = path.join(__dirname, "public", "mbomsign-logo.png");
+  let hasLogoFile = false;
+  try {
+    await fs.access(logoPath);
+    hasLogoFile = true;
+  } catch {
+    hasLogoFile = false;
+  }
+
   const info = await transporter.sendMail({
     from: MAIL_FROM,
     to: recipientEmail,
     subject: "Welcome to MbomSign - You are on the list",
-    html: buildWelcomeEmailHtml(recipientEmail),
-    attachments: [
-      {
-        filename: "mbomsign-logo.png",
-        path: path.join(__dirname, "public", "mbomsign-logo.png"),
-        cid: "mbomsignlogo",
-      },
-    ],
+    html: buildWelcomeEmailHtml(recipientEmail, hasLogoFile),
+    attachments: hasLogoFile
+      ? [
+          {
+            filename: "mbomsign-logo.png",
+            path: logoPath,
+            cid: "mbomsignlogo",
+          },
+        ]
+      : [],
   });
 
   console.log("Welcome email delivered to SMTP provider:", {
