@@ -133,10 +133,6 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.notify-form-name {
-  grid-column: 1 / -1;
-}
-
 .notify-form input {
   min-height: 54px;
   border-radius: 10px;

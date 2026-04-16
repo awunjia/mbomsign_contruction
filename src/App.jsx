@@ -18,16 +18,15 @@ const COPY = {
     follow: "Follow Us On",
     whatWeDo:
       "We empower businesses and teams with secure contract signing, identity verification, e-invoicing, smart forms and automation, and document certification.",
-    namePlaceholder: "Name (optional)",
     cookieBanner:
-      "We use a cookie to remember your choice on this device. If you join the waitlist, we collect your email and, if you provide it, your name to notify you about our release date and other product updates. We do not sell your data.",
+      "We use a cookie to remember your choice on this device. If you join the waitlist, we collect your email address only to notify you about our release date and other product updates. We do not collect names and we do not sell your data.",
     cookieAccept: "Accept",
     cookiePolicyDetailsLink: "Full policy",
     cookiePolicyTitle: "Privacy and cookie policy",
     cookiePolicyP1:
       "MbomSign stores a consent cookie so we do not ask you again on each visit. That cookie is not used to track you across other websites.",
     cookiePolicyP2:
-      "When you subscribe, we collect your email address and any name you choose to enter. We use this information only to notify you about our product launch, release timing, and related product updates. We do not sell your personal information.",
+      "When you subscribe, we collect your email address only. We use it solely to notify you about our product launch, release timing, and related product updates. We do not collect names on this page and we do not sell your personal information.",
     cookieClose: "Close",
     cookieFooterLink: "Privacy & cookies",
     language: "Language",
@@ -46,16 +45,15 @@ const COPY = {
     follow: "Suivez-nous",
     whatWeDo:
       "Nous aidons les entreprises avec la signature de contrats, la verification d'identite, la facturation electronique, les formulaires intelligents, l'automatisation et la certification de documents.",
-    namePlaceholder: "Nom (facultatif)",
     cookieBanner:
-      "Nous utilisons un cookie pour memoriser votre choix sur cet appareil. Si vous rejoignez la liste d'attente, nous traitons votre e-mail et, si vous l'indiquez, votre nom pour vous informer de la date de sortie et d'autres mises a jour produit. Nous ne vendons pas vos donnees.",
+      "Nous utilisons un cookie pour memoriser votre choix sur cet appareil. Si vous rejoignez la liste d'attente, nous collectons uniquement votre adresse e-mail pour vous informer de la date de sortie et d'autres mises a jour produit. Nous ne collectons pas les noms et nous ne vendons pas vos donnees.",
     cookieAccept: "Accepter",
     cookiePolicyDetailsLink: "Politique complete",
     cookiePolicyTitle: "Politique de confidentialite et cookies",
     cookiePolicyP1:
       "MbomSign enregistre un cookie de consentement pour ne pas vous le redemander a chaque visite. Ce cookie ne sert pas a vous suivre sur d'autres sites.",
     cookiePolicyP2:
-      "Lorsque vous vous inscrivez, nous collectons votre adresse e-mail et le nom que vous choisissez d'indiquer. Nous utilisons ces informations uniquement pour vous informer du lancement du produit, du calendrier de publication et des mises a jour liees au produit. Nous ne vendons pas vos donnees personnelles.",
+      "Lorsque vous vous inscrivez, nous collectons uniquement votre adresse e-mail. Nous l'utilisons seulement pour vous informer du lancement du produit, du calendrier de publication et des mises a jour liees au produit. Nous ne collectons pas les noms sur cette page et nous ne vendons pas vos donnees personnelles.",
     cookieClose: "Fermer",
     cookieFooterLink: "Confidentialite et cookies",
     language: "Langue",
@@ -74,16 +72,15 @@ const COPY = {
     follow: "Siguenos",
     whatWeDo:
       "Apoyamos a empresas con firma de contratos, verificacion de identidad, facturacion electronica, formularios inteligentes, automatizacion y certificacion de documentos.",
-    namePlaceholder: "Nombre (opcional)",
     cookieBanner:
-      "Usamos una cookie para recordar tu eleccion en este dispositivo. Si te apuntas a la lista de espera, recopilamos tu correo y, si lo indicas, tu nombre para avisarte de la fecha de lanzamiento y otras novedades del producto. No vendemos tus datos.",
+      "Usamos una cookie para recordar tu eleccion en este dispositivo. Si te apuntas a la lista de espera, solo recopilamos tu correo electronico para avisarte de la fecha de lanzamiento y otras novedades del producto. No recopilamos nombres y no vendemos tus datos.",
     cookieAccept: "Aceptar",
     cookiePolicyDetailsLink: "Politica completa",
     cookiePolicyTitle: "Privacidad y cookies",
     cookiePolicyP1:
       "MbomSign guarda una cookie de consentimiento para no volver a preguntarte en cada visita. Esa cookie no se usa para rastrearte en otros sitios.",
     cookiePolicyP2:
-      "Al suscribirte, recopilamos tu correo electronico y el nombre que elijas indicar. Usamos estos datos solo para informarte del lanzamiento del producto, los plazos de publicacion y actualizaciones relacionadas. No vendemos tu informacion personal.",
+      "Al suscribirte, solo recopilamos tu correo electronico. Lo usamos unicamente para informarte del lanzamiento del producto, los plazos de publicacion y actualizaciones relacionadas. No recopilamos nombres en esta pagina y no vendemos tu informacion personal.",
     cookieClose: "Cerrar",
     cookieFooterLink: "Privacidad y cookies",
     language: "Idioma",
@@ -102,16 +99,15 @@ const COPY = {
     follow: "Folge uns",
     whatWeDo:
       "Wir unterstutzen Unternehmen mit Vertragsunterzeichnung, Identitatsprufung, E-Rechnung, smarten Formularen, Automatisierung und Dokumentenzertifizierung.",
-    namePlaceholder: "Name (optional)",
     cookieBanner:
-      "Wir verwenden ein Cookie, um deine Entscheidung auf diesem Gerat zu speichern. Wenn du dich eintragst, verarbeiten wir deine E-Mail und optional deinen Namen, um dich uber Veroffentlichungstermine und weitere Produktupdates zu informieren. Wir verkaufen deine Daten nicht.",
+      "Wir verwenden ein Cookie, um deine Entscheidung auf diesem Gerat zu speichern. Wenn du dich eintragst, erfassen wir nur deine E-Mail-Adresse, um dich uber Veroffentlichungstermine und weitere Produktupdates zu informieren. Wir erfassen keine Namen und verkaufen deine Daten nicht.",
     cookieAccept: "Akzeptieren",
     cookiePolicyDetailsLink: "Vollstandige Richtlinie",
     cookiePolicyTitle: "Datenschutz und Cookies",
     cookiePolicyP1:
       "MbomSign speichert ein Einwilligungs-Cookie, damit wir dich nicht bei jedem Besuch erneut fragen. Dieses Cookie dient nicht zur Nachverfolgung auf anderen Websites.",
     cookiePolicyP2:
-      "Bei der Anmeldung erfassen wir deine E-Mail-Adresse und einen von dir angegebenen Namen. Wir nutzen diese Angaben ausschliesslich, um dich uber Produktstart, Zeitplan und zugehorige Produktupdates zu informieren. Wir verkaufen keine personenbezogenen Daten.",
+      "Bei der Anmeldung erfassen wir nur deine E-Mail-Adresse. Wir nutzen sie ausschliesslich, um dich uber Produktstart, Zeitplan und zugehorige Produktupdates zu informieren. Auf dieser Seite erfassen wir keine Namen und verkaufen keine personenbezogenen Daten.",
     cookieClose: "Schliessen",
     cookieFooterLink: "Datenschutz & Cookies",
     language: "Sprache",
@@ -130,16 +126,15 @@ const COPY = {
     follow: "تابعنا",
     whatWeDo:
       "نساعد الشركات على توقيع العقود، التحقق من الهوية، الفوترة الالكترونية، النماذج الذكية والاتمتة، وتصديق المستندات.",
-    namePlaceholder: "الاسم (اختياري)",
     cookieBanner:
-      "نستخدم ملف تعريف ارتباط لتذكر اختيارك على هذا الجهاز. اذا انضممت الى قائمة الانتظار، نجمع بريدك الالكتروني واسمك ان اخترت تقديمه لاخبارك بموعد الاطلاق وتحديثات المنتج الاخرى. لا نبيع بياناتك.",
+      "نستخدم ملف تعريف ارتباط لتذكر اختيارك على هذا الجهاز. اذا انضممت الى قائمة الانتظار، نجمع عنوان بريدك الالكتروني فقط لاخبارك بموعد الاطلاق وتحديثات المنتج الاخرى. لا نجمع الاسماء ولا نبيع بياناتك.",
     cookieAccept: "موافقة",
     cookiePolicyDetailsLink: "السياسة الكاملة",
     cookiePolicyTitle: "الخصوصية وملفات تعريف الارتباط",
     cookiePolicyP1:
       "تحفظ MbomSign ملف تعريف ارتباط للموافقة حتى لا نعيد السؤال في كل زيارة. لا يُستخدم لتتبعك عبر مواقع اخرى.",
     cookiePolicyP2:
-      "عند الاشتراك نجمع عنوان بريدك الالكتروني والاسم الذي تختار ادخاله. نستخدم هذه المعلومات فقط لاخبارك باطلاق المنتج وجدول النشر والتحديثات المتعلقة بالمنتج. لا نبيع معلوماتك الشخصية.",
+      "عند الاشتراك نجمع عنوان بريدك الالكتروني فقط. نستخدمه فقط لاخبارك باطلاق المنتج وجدول النشر والتحديثات المتعلقة بالمنتج. لا نجمع الاسماء في هذه الصفحة ولا نبيع معلوماتك الشخصية.",
     cookieClose: "اغلاق",
     cookieFooterLink: "الخصوصية وملفات الارتباط",
     language: "اللغة",
@@ -158,16 +153,15 @@ const COPY = {
     follow: "Seuraa meita",
     whatWeDo:
       "Autamme yrityksia turvallisessa sopimusten allekirjoituksessa, henkilollisyyden varmennuksessa, verkkolaskutuksessa, alykkaissa lomakkeissa, automaatiossa ja asiakirjojen sertifioinnissa.",
-    namePlaceholder: "Nimi (valinnainen)",
     cookieBanner:
-      "Kaytamme evastetta tallentaaksemme valintasi talla laitteella. Jos liityt odotuslistalle, keräämme sahkopostisi ja valinnaisen nimen ilmoittaaksemme julkaisupaivasta ja muista tuotepaivityksista. Emme myy tietojasi.",
+      "Kaytamme evastetta tallentaaksemme valintasi talla laitteella. Jos liityt odotuslistalle, keräämme vain sahkopostiosoitteesi ilmoittaaksemme julkaisupaivasta ja muista tuotepaivityksista. Emme kerää nimia talla sivulla. Emme myy tietojasi.",
     cookieAccept: "Hyvaksy",
     cookiePolicyDetailsLink: "Taysi kaytanto",
     cookiePolicyTitle: "Tietosuoja ja evasteet",
     cookiePolicyP1:
       "MbomSign tallentaa suostumusevasteen, jotta emme kysy uudelleen jokaisella kaynnilla. Evastetta ei kayteta seurantaan muilla sivustoilla.",
     cookiePolicyP2:
-      "Tilatessasi keräämme sahkopostiosoitteesi ja halutessasi antamasi nimen. Kaytamme tietoja vain tiedottaaksemme tuotejulkaisusta, aikataulusta ja niihin liittyvista paivityksista. Emme myy henkilotietojasi.",
+      "Tilatessasi keräämme vain sahkopostiosoitteesi. Kaytamme sita vain tiedottaaksemme tuotejulkaisusta, aikataulusta ja niihin liittyvista paivityksista. Emme kerää nimia talla sivulla. Emme myy henkilotietojasi.",
     cookieClose: "Sulje",
     cookieFooterLink: "Tietosuoja ja evasteet",
     language: "Kieli",
@@ -186,16 +180,15 @@ const COPY = {
     follow: "Folj oss",
     whatWeDo:
       "Vi hjalper foretag med saker avtalssignering, identitetsverifiering, e-fakturering, smarta formular och automatisering samt dokumentcertifiering.",
-    namePlaceholder: "Namn (valfritt)",
     cookieBanner:
-      "Vi anvander en kaka for att komma ihag ditt val pa den har enheten. Om du anmaler dig samlar vi in din e-post och, om du anger det, ditt namn for att meddela dig om lanseringsdatum och andra produktuppdateringar. Vi saljer inte dina uppgifter.",
+      "Vi anvander en kaka for att komma ihag ditt val pa den har enheten. Om du anmaler dig samlar vi endast in din e-postadress for att meddela dig om lanseringsdatum och andra produktuppdateringar. Vi samlar inte in namn och vi saljer inte dina uppgifter.",
     cookieAccept: "Godkann",
     cookiePolicyDetailsLink: "Full policy",
     cookiePolicyTitle: "Integritet och kakor",
     cookiePolicyP1:
       "MbomSign lagrar en samtyckeskaka sa att vi inte behover fraga igen vid varje besok. Den anvands inte for att spara dig pa andra webbplatser.",
     cookiePolicyP2:
-      "Nar du prenumererar samlar vi in din e-postadress och eventuellt namn du valjer att ange. Vi anvander uppgifterna endast for att informera dig om produktlansering, tidplan och relaterade produktuppdateringar. Vi saljer inte dina personuppgifter.",
+      "Nar du prenumererar samlar vi endast in din e-postadress. Vi anvander den bara for att informera dig om produktlansering, tidplan och relaterade produktuppdateringar. Vi samlar inte in namn pa den har sidan och vi saljer inte dina personuppgifter.",
     cookieClose: "Stang",
     cookieFooterLink: "Integritet & kakor",
     language: "Sprak",
@@ -205,7 +198,6 @@ const COPY = {
 
 function App() {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [policyOpen, setPolicyOpen] = useState(false);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
@@ -286,10 +278,7 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          ...(name.trim() ? { name: name.trim() } : {}),
-        }),
+        body: JSON.stringify({ email }),
       });
       const raw = await response.text();
       let data = {};
@@ -312,7 +301,6 @@ function App() {
       setStatus("success");
       setMessage(data.message);
       setEmail("");
-      setName("");
     } catch {
       setStatus("error");
       setMessage(
@@ -378,19 +366,6 @@ function App() {
         <p className="pre-form">{t.subscribePrompt}</p>
 
         <form className="notify-form" onSubmit={onSubmit}>
-          <label htmlFor="subscriber-name" className="sr-only">
-            {t.namePlaceholder}
-          </label>
-          <input
-            id="subscriber-name"
-            className="notify-form-name"
-            type="text"
-            placeholder={t.namePlaceholder}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            autoComplete="name"
-            maxLength={120}
-          />
           <label htmlFor="email" className="sr-only">
             Email address
           </label>

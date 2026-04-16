@@ -174,7 +174,7 @@ const WAITLIST_ADMIN_HTML = `<!DOCTYPE html>
     <p class="meta">Signed in with HTTP Basic Auth. Close the tab or clear site data to sign out.</p>
     <div id="status"></div>
     <table>
-      <thead><tr><th>Name</th><th>Email</th><th>Since</th><th>Source</th></tr></thead>
+      <thead><tr><th>Email</th><th>Since</th><th>Source</th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
     <div class="actions">
@@ -203,7 +203,7 @@ const WAITLIST_ADMIN_HTML = `<!DOCTYPE html>
       status.textContent = data.count + " subscriber(s).";
       for (const s of data.subscribers || []) {
         const tr = document.createElement("tr");
-        tr.innerHTML = "<td>" + (s.name || "") + "</td><td>" + (s.email || "") + "</td><td>" + (s.createdAt || "") + "</td><td>" + (s.source || "") + "</td>";
+        tr.innerHTML = "<td>" + (s.email || "") + "</td><td>" + (s.createdAt || "") + "</td><td>" + (s.source || "") + "</td>";
         rows.appendChild(tr);
       }
     }
@@ -476,10 +476,6 @@ app.post("/api/subscribe", async (req, res) => {
     const email = String(req.body?.email || "")
       .trim()
       .toLowerCase();
-    const name = String(req.body?.name || "")
-      .trim()
-      .slice(0, 120);
-
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValidEmail) {
       return res.status(400).json({ success: false, message: "Invalid email." });
@@ -497,7 +493,6 @@ app.post("/api/subscribe", async (req, res) => {
 
     subscribers.push({
       email,
-      ...(name ? { name } : {}),
       createdAt: new Date().toISOString(),
       source: "coming-soon-page",
     });
