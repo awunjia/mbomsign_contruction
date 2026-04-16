@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
+import CookieConsent from "react-cookie-consent";
 import "./App.css";
+
+const CONSENT_COOKIE_NAME = "mbomsign_cookie_consent_v1";
 
 const COPY = {
   en: {
     comingSoon: "Coming Soon",
     intro:
-      "Our website is currently under construction. Enter your email to get launch updates and product notifications.",
+      "Our platform is currently under construction but you can enter your email to get launch updates and product notifications.",
     timeLabel: "Days : Hours : Minutes : Seconds",
     daysLeft: "days left",
     subscribePrompt: "Don't want to miss updates? Subscribe now",
@@ -15,13 +18,25 @@ const COPY = {
     follow: "Follow Us On",
     whatWeDo:
       "We empower businesses and teams with secure contract signing, identity verification, e-invoicing, smart forms and automation, and document certification.",
+    namePlaceholder: "Name (optional)",
+    cookieBanner:
+      "We use a cookie to remember your choice on this device. If you join the waitlist, we collect your email and, if you provide it, your name to notify you about our release date and other product updates. We do not sell your data.",
+    cookieAccept: "Accept",
+    cookiePolicyDetailsLink: "Full policy",
+    cookiePolicyTitle: "Privacy and cookie policy",
+    cookiePolicyP1:
+      "MbomSign stores a consent cookie so we do not ask you again on each visit. That cookie is not used to track you across other websites.",
+    cookiePolicyP2:
+      "When you subscribe, we collect your email address and any name you choose to enter. We use this information only to notify you about our product launch, release timing, and related product updates. We do not sell your personal information.",
+    cookieClose: "Close",
+    cookieFooterLink: "Privacy & cookies",
     language: "Language",
     poweredBy: "Powered by",
   },
   fr: {
     comingSoon: "Bientot disponible",
     intro:
-      "Notre site est en cours de construction. Entrez votre email pour recevoir les mises a jour de lancement et des produits.",
+      "Notre plateforme est en cours de construction, mais vous pouvez entrer votre adresse e-mail pour recevoir les mises a jour du lancement et les notifications produit.",
     timeLabel: "Jours : Heures : Minutes : Secondes",
     daysLeft: "jours restants",
     subscribePrompt: "Ne manquez aucune mise a jour. Abonnez-vous",
@@ -31,13 +46,25 @@ const COPY = {
     follow: "Suivez-nous",
     whatWeDo:
       "Nous aidons les entreprises avec la signature de contrats, la verification d'identite, la facturation electronique, les formulaires intelligents, l'automatisation et la certification de documents.",
+    namePlaceholder: "Nom (facultatif)",
+    cookieBanner:
+      "Nous utilisons un cookie pour memoriser votre choix sur cet appareil. Si vous rejoignez la liste d'attente, nous traitons votre e-mail et, si vous l'indiquez, votre nom pour vous informer de la date de sortie et d'autres mises a jour produit. Nous ne vendons pas vos donnees.",
+    cookieAccept: "Accepter",
+    cookiePolicyDetailsLink: "Politique complete",
+    cookiePolicyTitle: "Politique de confidentialite et cookies",
+    cookiePolicyP1:
+      "MbomSign enregistre un cookie de consentement pour ne pas vous le redemander a chaque visite. Ce cookie ne sert pas a vous suivre sur d'autres sites.",
+    cookiePolicyP2:
+      "Lorsque vous vous inscrivez, nous collectons votre adresse e-mail et le nom que vous choisissez d'indiquer. Nous utilisons ces informations uniquement pour vous informer du lancement du produit, du calendrier de publication et des mises a jour liees au produit. Nous ne vendons pas vos donnees personnelles.",
+    cookieClose: "Fermer",
+    cookieFooterLink: "Confidentialite et cookies",
     language: "Langue",
     poweredBy: "Propulse par",
   },
   es: {
     comingSoon: "Proximamente",
     intro:
-      "Nuestro sitio web esta en construccion. Ingresa tu correo para recibir actualizaciones de lanzamiento y del producto.",
+      "Nuestra plataforma esta en construccion, pero puedes introducir tu correo para recibir actualizaciones del lanzamiento y notificaciones del producto.",
     timeLabel: "Dias : Horas : Minutos : Segundos",
     daysLeft: "dias restantes",
     subscribePrompt: "No quieres perderte novedades? Suscribete",
@@ -47,13 +74,25 @@ const COPY = {
     follow: "Siguenos",
     whatWeDo:
       "Apoyamos a empresas con firma de contratos, verificacion de identidad, facturacion electronica, formularios inteligentes, automatizacion y certificacion de documentos.",
+    namePlaceholder: "Nombre (opcional)",
+    cookieBanner:
+      "Usamos una cookie para recordar tu eleccion en este dispositivo. Si te apuntas a la lista de espera, recopilamos tu correo y, si lo indicas, tu nombre para avisarte de la fecha de lanzamiento y otras novedades del producto. No vendemos tus datos.",
+    cookieAccept: "Aceptar",
+    cookiePolicyDetailsLink: "Politica completa",
+    cookiePolicyTitle: "Privacidad y cookies",
+    cookiePolicyP1:
+      "MbomSign guarda una cookie de consentimiento para no volver a preguntarte en cada visita. Esa cookie no se usa para rastrearte en otros sitios.",
+    cookiePolicyP2:
+      "Al suscribirte, recopilamos tu correo electronico y el nombre que elijas indicar. Usamos estos datos solo para informarte del lanzamiento del producto, los plazos de publicacion y actualizaciones relacionadas. No vendemos tu informacion personal.",
+    cookieClose: "Cerrar",
+    cookieFooterLink: "Privacidad y cookies",
     language: "Idioma",
     poweredBy: "Impulsado por",
   },
   de: {
     comingSoon: "Demnachst verfugbar",
     intro:
-      "Unsere Website wird derzeit erstellt. Trage deine E-Mail ein, um Start- und Produkt-Updates zu erhalten.",
+      "Unsere Plattform befindet sich derzeit im Aufbau, aber du kannst deine E-Mail-Adresse eingeben, um Start-Updates und Produktbenachrichtigungen zu erhalten.",
     timeLabel: "Tage : Stunden : Minuten : Sekunden",
     daysLeft: "Tage ubrig",
     subscribePrompt: "Keine Updates verpassen? Jetzt abonnieren",
@@ -63,13 +102,25 @@ const COPY = {
     follow: "Folge uns",
     whatWeDo:
       "Wir unterstutzen Unternehmen mit Vertragsunterzeichnung, Identitatsprufung, E-Rechnung, smarten Formularen, Automatisierung und Dokumentenzertifizierung.",
+    namePlaceholder: "Name (optional)",
+    cookieBanner:
+      "Wir verwenden ein Cookie, um deine Entscheidung auf diesem Gerat zu speichern. Wenn du dich eintragst, verarbeiten wir deine E-Mail und optional deinen Namen, um dich uber Veroffentlichungstermine und weitere Produktupdates zu informieren. Wir verkaufen deine Daten nicht.",
+    cookieAccept: "Akzeptieren",
+    cookiePolicyDetailsLink: "Vollstandige Richtlinie",
+    cookiePolicyTitle: "Datenschutz und Cookies",
+    cookiePolicyP1:
+      "MbomSign speichert ein Einwilligungs-Cookie, damit wir dich nicht bei jedem Besuch erneut fragen. Dieses Cookie dient nicht zur Nachverfolgung auf anderen Websites.",
+    cookiePolicyP2:
+      "Bei der Anmeldung erfassen wir deine E-Mail-Adresse und einen von dir angegebenen Namen. Wir nutzen diese Angaben ausschliesslich, um dich uber Produktstart, Zeitplan und zugehorige Produktupdates zu informieren. Wir verkaufen keine personenbezogenen Daten.",
+    cookieClose: "Schliessen",
+    cookieFooterLink: "Datenschutz & Cookies",
     language: "Sprache",
     poweredBy: "Bereitgestellt von",
   },
   ar: {
     comingSoon: "قريبا",
     intro:
-      "موقعنا قيد الانشاء حاليا. ادخل بريدك الالكتروني للحصول على تحديثات الاطلاق والمنتج.",
+      "منصتنا قيد الانشاء حاليا، ويمكنك ادخال بريدك الالكتروني للحصول على تحديثات الاطلاق واشعارات المنتج.",
     timeLabel: "ايام : ساعات : دقائق : ثوان",
     daysLeft: "ايام متبقية",
     subscribePrompt: "لا تريد ان تفوت التحديثات؟ اشترك الان",
@@ -79,13 +130,25 @@ const COPY = {
     follow: "تابعنا",
     whatWeDo:
       "نساعد الشركات على توقيع العقود، التحقق من الهوية، الفوترة الالكترونية، النماذج الذكية والاتمتة، وتصديق المستندات.",
+    namePlaceholder: "الاسم (اختياري)",
+    cookieBanner:
+      "نستخدم ملف تعريف ارتباط لتذكر اختيارك على هذا الجهاز. اذا انضممت الى قائمة الانتظار، نجمع بريدك الالكتروني واسمك ان اخترت تقديمه لاخبارك بموعد الاطلاق وتحديثات المنتج الاخرى. لا نبيع بياناتك.",
+    cookieAccept: "موافقة",
+    cookiePolicyDetailsLink: "السياسة الكاملة",
+    cookiePolicyTitle: "الخصوصية وملفات تعريف الارتباط",
+    cookiePolicyP1:
+      "تحفظ MbomSign ملف تعريف ارتباط للموافقة حتى لا نعيد السؤال في كل زيارة. لا يُستخدم لتتبعك عبر مواقع اخرى.",
+    cookiePolicyP2:
+      "عند الاشتراك نجمع عنوان بريدك الالكتروني والاسم الذي تختار ادخاله. نستخدم هذه المعلومات فقط لاخبارك باطلاق المنتج وجدول النشر والتحديثات المتعلقة بالمنتج. لا نبيع معلوماتك الشخصية.",
+    cookieClose: "اغلاق",
+    cookieFooterLink: "الخصوصية وملفات الارتباط",
     language: "اللغة",
     poweredBy: "مدعوم من",
   },
   fi: {
     comingSoon: "Tulossa pian",
     intro:
-      "Verkkosivumme on rakenteilla. Anna sahkopostisi saadaksesi julkaisu- ja tuotepaivitykset.",
+      "Alustamme on parhaillaan rakenteilla, mutta voit syottaa sahkopostiosoitteesi saadaksesi julkaisupaivityksia ja tuotetiedotteita.",
     timeLabel: "Paivaa : Tuntia : Minuuttia : Sekuntia",
     daysLeft: "paivaa jaljella",
     subscribePrompt: "Etkö halua missaata paivityksia? Tilaa nyt",
@@ -95,13 +158,25 @@ const COPY = {
     follow: "Seuraa meita",
     whatWeDo:
       "Autamme yrityksia turvallisessa sopimusten allekirjoituksessa, henkilollisyyden varmennuksessa, verkkolaskutuksessa, alykkaissa lomakkeissa, automaatiossa ja asiakirjojen sertifioinnissa.",
+    namePlaceholder: "Nimi (valinnainen)",
+    cookieBanner:
+      "Kaytamme evastetta tallentaaksemme valintasi talla laitteella. Jos liityt odotuslistalle, keräämme sahkopostisi ja valinnaisen nimen ilmoittaaksemme julkaisupaivasta ja muista tuotepaivityksista. Emme myy tietojasi.",
+    cookieAccept: "Hyvaksy",
+    cookiePolicyDetailsLink: "Taysi kaytanto",
+    cookiePolicyTitle: "Tietosuoja ja evasteet",
+    cookiePolicyP1:
+      "MbomSign tallentaa suostumusevasteen, jotta emme kysy uudelleen jokaisella kaynnilla. Evastetta ei kayteta seurantaan muilla sivustoilla.",
+    cookiePolicyP2:
+      "Tilatessasi keräämme sahkopostiosoitteesi ja halutessasi antamasi nimen. Kaytamme tietoja vain tiedottaaksemme tuotejulkaisusta, aikataulusta ja niihin liittyvista paivityksista. Emme myy henkilotietojasi.",
+    cookieClose: "Sulje",
+    cookieFooterLink: "Tietosuoja ja evasteet",
     language: "Kieli",
     poweredBy: "Palvelun tarjoaa",
   },
   sv: {
     comingSoon: "Kommer snart",
     intro:
-      "Var webbplats ar under uppbyggnad. Ange din e-post for att fa lanserings- och produktuppdateringar.",
+      "Var plattform ar under uppbyggnad just nu, men du kan ange din e-postadress for att fa lanseringsuppdateringar och produktmeddelanden.",
     timeLabel: "Dagar : Timmar : Minuter : Sekunder",
     daysLeft: "dagar kvar",
     subscribePrompt: "Vill du inte missa uppdateringar? Prenumerera nu",
@@ -111,6 +186,18 @@ const COPY = {
     follow: "Folj oss",
     whatWeDo:
       "Vi hjalper foretag med saker avtalssignering, identitetsverifiering, e-fakturering, smarta formular och automatisering samt dokumentcertifiering.",
+    namePlaceholder: "Namn (valfritt)",
+    cookieBanner:
+      "Vi anvander en kaka for att komma ihag ditt val pa den har enheten. Om du anmaler dig samlar vi in din e-post och, om du anger det, ditt namn for att meddela dig om lanseringsdatum och andra produktuppdateringar. Vi saljer inte dina uppgifter.",
+    cookieAccept: "Godkann",
+    cookiePolicyDetailsLink: "Full policy",
+    cookiePolicyTitle: "Integritet och kakor",
+    cookiePolicyP1:
+      "MbomSign lagrar en samtyckeskaka sa att vi inte behover fraga igen vid varje besok. Den anvands inte for att spara dig pa andra webbplatser.",
+    cookiePolicyP2:
+      "Nar du prenumererar samlar vi in din e-postadress och eventuellt namn du valjer att ange. Vi anvander uppgifterna endast for att informera dig om produktlansering, tidplan och relaterade produktuppdateringar. Vi saljer inte dina personuppgifter.",
+    cookieClose: "Stang",
+    cookieFooterLink: "Integritet & kakor",
     language: "Sprak",
     poweredBy: "Drivs av",
   },
@@ -118,6 +205,8 @@ const COPY = {
 
 function App() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [policyOpen, setPolicyOpen] = useState(false);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const [language, setLanguage] = useState("en");
@@ -129,7 +218,7 @@ function App() {
   });
 
   const launchDate = useMemo(
-    () => new Date(2026, 3, 30, 23, 59, 59),
+    () => new Date(2026, 5, 1, 23, 59, 59),
     [],
   );
   const t = COPY[language];
@@ -167,6 +256,17 @@ function App() {
     return () => clearInterval(timer);
   }, [launchDate]);
 
+  useEffect(() => {
+    if (!policyOpen) return;
+    function onKeyDown(event) {
+      if (event.key === "Escape") {
+        setPolicyOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [policyOpen]);
+
   async function onSubmit(event) {
     event.preventDefault();
     setStatus("loading");
@@ -186,7 +286,10 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          ...(name.trim() ? { name: name.trim() } : {}),
+        }),
       });
       const raw = await response.text();
       let data = {};
@@ -209,6 +312,7 @@ function App() {
       setStatus("success");
       setMessage(data.message);
       setEmail("");
+      setName("");
     } catch {
       setStatus("error");
       setMessage(
@@ -274,6 +378,19 @@ function App() {
         <p className="pre-form">{t.subscribePrompt}</p>
 
         <form className="notify-form" onSubmit={onSubmit}>
+          <label htmlFor="subscriber-name" className="sr-only">
+            {t.namePlaceholder}
+          </label>
+          <input
+            id="subscriber-name"
+            className="notify-form-name"
+            type="text"
+            placeholder={t.namePlaceholder}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoComplete="name"
+            maxLength={120}
+          />
           <label htmlFor="email" className="sr-only">
             Email address
           </label>
@@ -311,12 +428,105 @@ function App() {
         </p>
 
         <footer className="powered-by">
+          <button
+            type="button"
+            className="footer-privacy-link"
+            onClick={() => setPolicyOpen(true)}
+          >
+            {t.cookieFooterLink}
+          </button>
+          <span className="footer-sep" aria-hidden="true">
+            {" · "}
+          </span>
           {t.poweredBy}{" "}
           <a href="https://www.asatek.io" target="_blank" rel="noreferrer">
             AsaTek
           </a>
         </footer>
       </section>
+
+      <CookieConsent
+        location="bottom"
+        buttonText={t.cookieAccept}
+        cookieName={CONSENT_COOKIE_NAME}
+        expires={365}
+        sameSite="lax"
+        style={{
+          alignItems: "center",
+          background: "rgba(15, 35, 92, 0.97)",
+          color: "#e8edff",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          left: 0,
+          position: "fixed",
+          width: "100%",
+          zIndex: 9998,
+          boxShadow: "0 -8px 32px rgba(15, 23, 42, 0.2)",
+        }}
+        contentStyle={{
+          flex: "1 1 280px",
+          margin: "14px 18px",
+          fontSize: "0.9rem",
+          lineHeight: 1.55,
+        }}
+        buttonStyle={{
+          background: "#465fff",
+          border: 0,
+          borderRadius: "10px",
+          boxShadow: "none",
+          color: "#fff",
+          cursor: "pointer",
+          flex: "0 0 auto",
+          fontWeight: 700,
+          margin: "12px 18px",
+          padding: "12px 22px",
+        }}
+        containerClasses="cookie-consent-container"
+        contentClasses="cookie-consent-text"
+        buttonClasses="cookie-consent-btn"
+        buttonWrapperClasses="cookie-consent-actions"
+        ariaAcceptLabel={t.cookieAccept}
+      >
+        <span className="cookie-consent-msg">
+          {t.cookieBanner}{" "}
+          <button
+            type="button"
+            className="cookie-consent-inline-link"
+            onClick={() => setPolicyOpen(true)}
+          >
+            {t.cookiePolicyDetailsLink}
+          </button>
+        </span>
+      </CookieConsent>
+
+      {policyOpen ? (
+        <div
+          className="policy-backdrop"
+          role="presentation"
+          onClick={() => setPolicyOpen(false)}
+        >
+          <div
+            className="policy-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cookie-policy-title"
+            dir={language === "ar" ? "rtl" : "ltr"}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="cookie-policy-title">{t.cookiePolicyTitle}</h2>
+            <p>{t.cookiePolicyP1}</p>
+            <p>{t.cookiePolicyP2}</p>
+            <button
+              type="button"
+              className="policy-modal-close"
+              onClick={() => setPolicyOpen(false)}
+            >
+              {t.cookieClose}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
