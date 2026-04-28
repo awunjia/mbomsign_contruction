@@ -17,7 +17,7 @@ const COPY = {
     notify: "Notify Me",
     follow: "Follow Us On",
     whatWeDo:
-      "We empower businesses and teams with secure contract signing, identity verification, e-invoicing, smart forms and automation, and document certification.",
+      "We empower businesses and teams with a secure, scalable digital trust infrastructure enabling advanced contract signing, identity verification, e-invoicing, intelligent forms, workflow automation, and document certification. Built as Cameroon's first sign and trust platform aligned with Nordic standards, we deliver reliability, compliance, and cutting-edge security by design.",
     cookieBanner:
       "We use a cookie to remember your choice on this device. If you join the waitlist, we collect your email address only to notify you about our release date and other product updates. We do not collect names and we do not sell your data.",
     cookieAccept: "Accept",
@@ -33,7 +33,7 @@ const COPY = {
     poweredBy: "Powered by",
   },
   fr: {
-    comingSoon: "Bientot disponible",
+    comingSoon: "Bientot Disponible",
     intro:
       "Notre plateforme est en cours de construction, mais vous pouvez entrer votre adresse e-mail pour recevoir les mises a jour du lancement et les notifications produit.",
     timeLabel: "Jours : Heures : Minutes : Secondes",
@@ -44,7 +44,7 @@ const COPY = {
     notify: "Me notifier",
     follow: "Suivez-nous",
     whatWeDo:
-      "Nous aidons les entreprises avec la signature de contrats, la verification d'identite, la facturation electronique, les formulaires intelligents, l'automatisation et la certification de documents.",
+      "Nous donnons aux entreprises et aux equipes une infrastructure de confiance numerique securisee et evolutive permettant la signature avancee de contrats, la verification d'identite, la facturation electronique, les formulaires intelligents, l'automatisation des workflows et la certification des documents. En tant que premiere plateforme de signature et de confiance au Cameroun, alignee sur les standards nordiques, nous offrons fiabilite, conformite et securite de pointe des la conception.",
     cookieBanner:
       "Nous utilisons un cookie pour memoriser votre choix sur cet appareil. Si vous rejoignez la liste d'attente, nous collectons uniquement votre adresse e-mail pour vous informer de la date de sortie et d'autres mises a jour produit. Nous ne collectons pas les noms et nous ne vendons pas vos donnees.",
     cookieAccept: "Accepter",
@@ -71,7 +71,7 @@ const COPY = {
     notify: "Notificarme",
     follow: "Siguenos",
     whatWeDo:
-      "Apoyamos a empresas con firma de contratos, verificacion de identidad, facturacion electronica, formularios inteligentes, automatizacion y certificacion de documentos.",
+      "Impulsamos a empresas y equipos con una infraestructura de confianza digital segura y escalable que permite firma avanzada de contratos, verificacion de identidad, facturacion electronica, formularios inteligentes, automatizacion de flujos de trabajo y certificacion de documentos. Como primera plataforma de firma y confianza de Camerun, alineada con estandares nordicos, ofrecemos fiabilidad, cumplimiento y seguridad de vanguardia desde el diseno.",
     cookieBanner:
       "Usamos una cookie para recordar tu eleccion en este dispositivo. Si te apuntas a la lista de espera, solo recopilamos tu correo electronico para avisarte de la fecha de lanzamiento y otras novedades del producto. No recopilamos nombres y no vendemos tus datos.",
     cookieAccept: "Aceptar",
@@ -87,7 +87,7 @@ const COPY = {
     poweredBy: "Impulsado por",
   },
   de: {
-    comingSoon: "Demnachst verfugbar",
+    comingSoon: "Demnachst Verfugbar",
     intro:
       "Unsere Plattform befindet sich derzeit im Aufbau, aber du kannst deine E-Mail-Adresse eingeben, um Start-Updates und Produktbenachrichtigungen zu erhalten.",
     timeLabel: "Tage : Stunden : Minuten : Sekunden",
@@ -98,7 +98,7 @@ const COPY = {
     notify: "Benachrichtigen",
     follow: "Folge uns",
     whatWeDo:
-      "Wir unterstutzen Unternehmen mit Vertragsunterzeichnung, Identitatsprufung, E-Rechnung, smarten Formularen, Automatisierung und Dokumentenzertifizierung.",
+      "Wir unterstutzen Unternehmen und Teams mit einer sicheren, skalierbaren digitalen Vertrauensinfrastruktur fur fortgeschrittene Vertragsunterzeichnung, Identitatsprufung, E-Rechnung, intelligente Formulare, Workflow-Automatisierung und Dokumentenzertifizierung. Als erste Signatur- und Vertrauensplattform Kameruns nach nordischen Standards bieten wir Zuverlassigkeit, Compliance und modernste Sicherheit by Design.",
     cookieBanner:
       "Wir verwenden ein Cookie, um deine Entscheidung auf diesem Gerat zu speichern. Wenn du dich eintragst, erfassen wir nur deine E-Mail-Adresse, um dich uber Veroffentlichungstermine und weitere Produktupdates zu informieren. Wir erfassen keine Namen und verkaufen deine Daten nicht.",
     cookieAccept: "Akzeptieren",
@@ -125,7 +125,7 @@ const COPY = {
     notify: "اخطرني",
     follow: "تابعنا",
     whatWeDo:
-      "نساعد الشركات على توقيع العقود، التحقق من الهوية، الفوترة الالكترونية، النماذج الذكية والاتمتة، وتصديق المستندات.",
+      "نمكن الشركات والفرق من بنية تحتية رقمية للثقة تكون امنة وقابلة للتوسع، وتدعم توقيع العقود المتقدم، والتحقق من الهوية، والفوترة الالكترونية، والنماذج الذكية، واتمتة سير العمل، وتصديق المستندات. وباعتبارنا اول منصة توقيع وثقة في الكاميرون ومتوافقة مع المعايير الاسكندنافية، نقدم الموثوقية والامتثال والامن المتقدم منذ التصميم.",
     cookieBanner:
       "نستخدم ملف تعريف ارتباط لتذكر اختيارك على هذا الجهاز. اذا انضممت الى قائمة الانتظار، نجمع عنوان بريدك الالكتروني فقط لاخبارك بموعد الاطلاق وتحديثات المنتج الاخرى. لا نجمع الاسماء ولا نبيع بياناتك.",
     cookieAccept: "موافقة",
@@ -141,7 +141,7 @@ const COPY = {
     poweredBy: "مدعوم من",
   },
   fi: {
-    comingSoon: "Tulossa pian",
+    comingSoon: "Tulossa Pian",
     intro:
       "Alustamme on parhaillaan rakenteilla, mutta voit syottaa sahkopostiosoitteesi saadaksesi julkaisupaivityksia ja tuotetiedotteita.",
     timeLabel: "Paivaa : Tuntia : Minuuttia : Sekuntia",
@@ -152,7 +152,7 @@ const COPY = {
     notify: "Ilmoita minulle",
     follow: "Seuraa meita",
     whatWeDo:
-      "Autamme yrityksia turvallisessa sopimusten allekirjoituksessa, henkilollisyyden varmennuksessa, verkkolaskutuksessa, alykkaissa lomakkeissa, automaatiossa ja asiakirjojen sertifioinnissa.",
+      "Tuemme yrityksia ja tiimeja turvallisella ja skaalautuvalla digitaalisen luottamuksen infrastruktuurilla, joka mahdollistaa kehittyneen sopimusten allekirjoituksen, henkilon tunnistamisen, verkkolaskutuksen, alykkaat lomakkeet, tyonkulkujen automaation ja asiakirjojen sertifioinnin. Kamerunin ensimmaisena allekirjoitus- ja luottamusalustana, joka on linjassa pohjoismaisten standardien kanssa, tarjoamme luotettavuutta, vaatimustenmukaisuutta ja huipputason turvallisuutta suunnittelusta alkaen.",
     cookieBanner:
       "Kaytamme evastetta tallentaaksemme valintasi talla laitteella. Jos liityt odotuslistalle, keräämme vain sahkopostiosoitteesi ilmoittaaksemme julkaisupaivasta ja muista tuotepaivityksista. Emme kerää nimia talla sivulla. Emme myy tietojasi.",
     cookieAccept: "Hyvaksy",
@@ -168,7 +168,7 @@ const COPY = {
     poweredBy: "Palvelun tarjoaa",
   },
   sv: {
-    comingSoon: "Kommer snart",
+    comingSoon: "Kommer Snart",
     intro:
       "Var plattform ar under uppbyggnad just nu, men du kan ange din e-postadress for att fa lanseringsuppdateringar och produktmeddelanden.",
     timeLabel: "Dagar : Timmar : Minuter : Sekunder",
@@ -179,7 +179,7 @@ const COPY = {
     notify: "Meddela mig",
     follow: "Folj oss",
     whatWeDo:
-      "Vi hjalper foretag med saker avtalssignering, identitetsverifiering, e-fakturering, smarta formular och automatisering samt dokumentcertifiering.",
+      "Vi ger foretag och team en saker och skalbar digital tillitsinfrastruktur som mojliggor avancerad avtalssignering, identitetsverifiering, e-fakturering, intelligenta formular, arbetsflodesautomatisering och dokumentcertifiering. Som Kameruns forsta signatur- och tillitsplattform, i linje med nordiska standarder, levererar vi tillforlitlighet, efterlevnad och banbrytande sakerhet redan i designen.",
     cookieBanner:
       "Vi anvander en kaka for att komma ihag ditt val pa den har enheten. Om du anmaler dig samlar vi endast in din e-postadress for att meddela dig om lanseringsdatum och andra produktuppdateringar. Vi samlar inte in namn och vi saljer inte dina uppgifter.",
     cookieAccept: "Godkann",
@@ -398,9 +398,7 @@ function App() {
           </p>
         )}
 
-        <p className="what-we-do">
-            We empower businesses and teams with a secure, scalable digital trust infrastructure enabling advanced contract signing, identity verification, e-invoicing, intelligent forms, workflow automation, and document certification. <br /> <br /> Built as Cameroon’s first sign and trust platform aligned with Nordic standards, we deliver reliability, compliance, and cutting-edge security by design.
-        </p>
+        <p className="what-we-do">{t.whatWeDo}</p>
 
         <footer className="powered-by">
           <button
